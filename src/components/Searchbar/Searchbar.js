@@ -12,7 +12,7 @@ import {
 export const Searchbar = ({ query, onSubmit }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const handleQueryChange = e => {
-    console.log(e.target.value);
+    console.log(e.currentTarget.value);
     setSearchQuery(e.currentTarget.value);
   };
   const handleSubmit = e => {
