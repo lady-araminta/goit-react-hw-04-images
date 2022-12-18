@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, useState } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import { GrSearch } from 'react-icons/gr';
@@ -9,7 +9,45 @@ import {
   SearchInput,
 } from './Searchbar.styled';
 
-export class Searchbar extends Component {
+export const Searchbar = ({ query, onSubmit }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const handleQueryChange = e => {
+    console.log(e.target.value);
+    setSearchQuery(e.currentTarget.value);
+  };
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (searchQuery === '') {
+      toast('Enter a search query!');
+      return;
+    }
+    if (query === searchQuery) {
+      toast(
+        'We have already found pictures for this request. Enter something else!'
+      );
+      return;
+    }
+    onSubmit(searchQuery);
+    setSearchQuery('');
+  };
+  return (
+    <SearchBox>
+      <SearchForm onSubmit={handleSubmit}>
+        <SearchButton type="submit">
+          <GrSearch />
+        </SearchButton>
+        <SearchInput
+          type="text"
+          placeholder="Search images and photos"
+          value={query}
+          onChange={handleQueryChange}
+        />
+      </SearchForm>
+    </SearchBox>
+  );
+};
+
+export class OldSearchbar extends Component {
   state = {
     query: '',
   };
