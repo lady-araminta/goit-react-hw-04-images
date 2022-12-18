@@ -13,7 +13,7 @@ export const Searchbar = ({ query, onSubmit }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const handleQueryChange = e => {
     console.log(e.currentTarget.value);
-    setSearchQuery(e.currentTarget.value);
+    setSearchQuery(e.currentTarget.value.toLowerCase().trim());
   };
   const handleSubmit = e => {
     e.preventDefault();
