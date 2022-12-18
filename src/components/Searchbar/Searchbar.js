@@ -47,48 +47,48 @@ export const Searchbar = ({ query, onSubmit }) => {
   );
 };
 
-// export class OldSearchbar extends Component {
-//   state = {
-//     query: '',
-//   };
+export class OldSearchbar extends Component {
+  state = {
+    query: '',
+  };
 
-//   handleQueryChange = e => {
-//     this.setState({ query: e.currentTarget.value.toLowerCase().trim() });
-//   };
-//   handleSubmit = event => {
-//     const { query } = this.state;
-//     event.preventDefault();
-//     if (query === '') {
-//       toast('Enter a search query!');
-//       return;
-//     }
-//     if (this.props.query === query) {
-//       toast(
-//         'We have already found pictures for this request. Enter something else!'
-//       );
-//       return;
-//     }
-//     this.props.onSubmit(this.state.query);
-//     this.setState({ query: '' });
-//   };
-//   render() {
-//     return (
-//       <SearchBox>
-//         <SearchForm onSubmit={this.handleSubmit}>
-//           <SearchButton type="submit">
-//             <GrSearch />
-//           </SearchButton>
-//           <SearchInput
-//             type="text"
-//             placeholder="Search images and photos"
-//             value={this.state.query}
-//             onChange={this.handleQueryChange}
-//           />
-//         </SearchForm>
-//       </SearchBox>
-//     );
-//   }
-// }
+  handleQueryChange = e => {
+    this.setState({ query: e.currentTarget.value.toLowerCase().trim() });
+  };
+  handleSubmit = event => {
+    const { query } = this.state;
+    event.preventDefault();
+    if (query === '') {
+      toast('Enter a search query!');
+      return;
+    }
+    if (this.props.query === query) {
+      toast(
+        'We have already found pictures for this request. Enter something else!'
+      );
+      return;
+    }
+    this.props.onSubmit(this.state.query);
+    this.setState({ query: '' });
+  };
+  render() {
+    return (
+      <SearchBox>
+        <SearchForm onSubmit={this.handleSubmit}>
+          <SearchButton type="submit">
+            <GrSearch />
+          </SearchButton>
+          <SearchInput
+            type="text"
+            placeholder="Search images and photos"
+            value={this.state.query}
+            onChange={this.handleQueryChange}
+          />
+        </SearchForm>
+      </SearchBox>
+    );
+  }
+}
 
 Searchbar.propTypes = {
   query: PropTypes.string.isRequired,

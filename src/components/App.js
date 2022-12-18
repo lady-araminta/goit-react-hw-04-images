@@ -19,24 +19,29 @@ export const App = () => {
   const [isBtnVisible, setIsBtnVisible] = useState(false);
 
   useEffect(() => {
-    imagesFind(query, page)
-      .then(({ hits, totalHits }) => {
-        if (hits.length > 12) {
-          setIsBtnVisible(true);
-        }
-        if (totalHits === 0) {
+    if (!query) {
+      return;
+    } else {
+      imagesFind(query, page)
+        .then(({ hits, totalHits }) => {
+          if (hits.length > 12) {
+            setIsBtnVisible(true);
+          }
+          if (totalHits === 0) {
+            setLoading(false);
+            return toast('Sorry, nothing was found for your search');
+          }
+          setImages(images => [...images, ...hits]);
+          setTotalHits(totalHits);
           setLoading(false);
-          return toast('Sorry, nothing was found for your search');
-        }
-        setImages(images => [...images, ...hits]);
-        setTotalHits(totalHits);
-        setLoading(false);
-      })
-      .catch(error => {
-        setError(error);
-        setLoading(false);
-        return toast('Something went wrong! Please retry');
-      });
+        })
+        .catch(error => {
+          console.log(error);
+          setError(error);
+          setLoading(false);
+          return toast('Something went wrong! Please retry!');
+        });
+    }
   }, [query, page]);
 
   const handleSubmit = query => {
@@ -66,89 +71,91 @@ export const App = () => {
           ))}
         </ImageGallery>
       )}
+      {error && <p>Something went wrong! Please retry!</p>}
       {loading && <Loader />}
-      {images.length > 0 && images.length !== totalHits && !loading && (
-        <Button onClick={loadMore} />
-      )}
+      {images.length > 0 &&
+        images.length !== totalHits &&
+        !loading &&
+        !isBtnVisible && <Button onClick={loadMore} />}
       <GlobalStyle />
       <ToastContainer position="top-center" autoClose={2500} />
     </>
   );
 };
 
-// export class OldApp extends Component {
-//   state = {
-//     query: '',
-//     page: 1,
-//     images: [],
-//     error: null,
-//     loading: false,
-//     isBtnVisible: false,
-//   };
+export class OldApp extends Component {
+  state = {
+    query: '',
+    page: 1,
+    images: [],
+    error: null,
+    loading: false,
+    isBtnVisible: false,
+  };
 
-//   componentDidUpdate(prevProps, prevState) {
-//     const { query, page } = this.state;
-//     if (prevState.query !== query || prevState.page !== page) {
-//       imagesFind(query, page)
-//         .then(({ hits, totalHits }) => {
-//           if (hits.length > 12) {
-//             this.setState({ isBtnVisible: true });
-//           }
-//           if (totalHits === 0) {
-//             this.setState({ loading: false });
-//             return toast('Sorry, nothing was found for your search');
-//           }
-//           this.setState(prevState => ({
-//             images: [...prevState.images, ...hits],
-//             loading: false,
-//             totalHits,
-//           }));
-//         })
-//         .catch(error => {
-//           this.setState({ loading: false });
-//           return toast('Something went wrong! Please retry');
-//         });
-//     }
-//   }
-//   handleSubmit = query => {
-//     this.setState({
-//       query,
-//       page: 1,
-//       images: [],
-//       loading: true,
-//       isBtnVisible: false,
-//     });
-//   };
-//   loadMore = () => {
-//     this.setState(prevState => ({
-//       page: prevState.page + 1,
-//       loading: true,
-//     }));
-//     const { page, totalHits } = this.state;
-//     const amountOfPages = totalHits / 12 - page;
-//     if (amountOfPages < 0) {
-//       this.setState({ isBtnVisible: false });
-//     }
-//   };
-//   render() {
-//     const { query, images, loading, totalHits } = this.state;
-//     return (
-//       <>
-//         <Searchbar onSubmit={this.handleSubmit} query={query} />
-//         {images.length > 0 && (
-//           <ImageGallery>
-//             {images.map(image => (
-//               <ImageGalleryItem key={image.id} image={image} />
-//             ))}
-//           </ImageGallery>
-//         )}
-//         {loading && <Loader />}
-//         {images.length > 0 && images.length !== totalHits && !loading && (
-//           <Button onClick={this.loadMore} />
-//         )}
-//         <GlobalStyle />
-//         <ToastContainer position="top-center" autoClose={2500} />
-//       </>
-//     );
-//   }
-// }
+  componentDidUpdate(prevProps, prevState) {
+    const { query, page } = this.state;
+    if (prevState.query !== query || prevState.page !== page) {
+      imagesFind(query, page)
+        .then(({ hits, totalHits }) => {
+          if (hits.length > 12) {
+            this.setState({ isBtnVisible: true });
+          }
+          if (totalHits === 0) {
+            this.setState({ loading: false });
+            return toast('Sorry, nothing was found for your search');
+          }
+          this.setState(prevState => ({
+            images: [...prevState.images, ...hits],
+            loading: false,
+            totalHits,
+          }));
+        })
+        .catch(error => {
+          this.setState({ loading: false });
+          return toast('Something went wrong! Please retry');
+        });
+    }
+  }
+  handleSubmit = query => {
+    this.setState({
+      query,
+      page: 1,
+      images: [],
+      loading: true,
+      isBtnVisible: false,
+    });
+  };
+  loadMore = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+      loading: true,
+    }));
+    const { page, totalHits } = this.state;
+    const amountOfPages = totalHits / 12 - page;
+    if (amountOfPages < 0) {
+      this.setState({ isBtnVisible: false });
+    }
+  };
+  render() {
+    const { query, images, loading, totalHits } = this.state;
+    return (
+      <>
+        <Searchbar onSubmit={this.handleSubmit} query={query} />
+        {images.length > 0 && (
+          <ImageGallery>
+            {images.map(image => (
+              <ImageGalleryItem key={image.id} image={image} />
+            ))}
+          </ImageGallery>
+        )}
+        {loading && <Loader />}
+        {images.length > 0 && images.length !== totalHits && !loading && (
+          <Button onClick={this.loadMore} />
+        )}
+        <GlobalStyle />
+        <ToastContainer position="top-center" autoClose={2500} />
+      </>
+    );
+  }
+}
